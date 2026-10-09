@@ -239,7 +239,7 @@ async function handleSub(res, token) {
       if (!srt) return send(res, 404, 'subtitle not found', 'text/plain');
       cacheSet(token, srt);
     }
-    send(res, 200, srt, 'application/x-subrip; charset=utf-8', { 'Cache-Control': 'max-age=86400' });
+    send(res, 200, srt, 'text/plain; charset=utf-8', { 'Cache-Control': 'max-age=86400' });
   } catch (e) {
     console.warn('sub error:', e.message);
     send(res, 502, 'failed to fetch subtitle', 'text/plain');
