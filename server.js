@@ -165,8 +165,14 @@ function pickFromZip(buf, ep) {
   if (!entries.length) return null;
   if (ep && ep.season && ep.episode && entries.length > 1) {
     const s = ep.season, e = ep.episode;
-    const re = new RegExp(`(s0*${s}[ ._-]*e0*${e}(?!\\d))|((^|[^\\d])0*${s}x0*${e}(?!\\d))|(e(p)?0*${e}(?!\\d))`, 'i');
-    const hit = entries.find((x) => re.test(x.name));
+    const base = (x) => x.name.split(/[\\/]/).pop();
+    // الأنماط الدقيقة أول: S01E01 أو 1x01
+    const exact = new RegExp(`(s0*${s}[ ._-]*e0*${e}(?!\\d))|((^|[^\\d])0*${s}x0*${e}(?!\\d))`, 'i');
+    // النمط الواسع (E01 / Ep01 / Episode 1) فقط للملفات اللي ما فيها SxxEyy ثاني
+    const loose = new RegExp(`e(p|pisode)?[ ._-]*0*${e}(?!\\d)`, 'i');
+    const anySxE = /s\d+[ ._-]*e\d+/i;
+    const hit = entries.find((x) => exact.test(base(x)))
+      || entries.find((x) => !anySxE.test(base(x)) && loose.test(base(x)));
     return hit ? hit.getData() : null;
   }
   return entries.sort((a, b) => b.size - a.size)[0].getData();

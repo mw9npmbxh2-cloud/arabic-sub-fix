@@ -4,7 +4,8 @@
   "description": "Stremio addon: fixed Arabic subtitles (UTF-8, RTL, ZIP) — no dependencies",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test test.js"
   },
   "engines": {
     "node": ">=18"
