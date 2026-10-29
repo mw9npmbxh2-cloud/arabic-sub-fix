@@ -36,3 +36,23 @@ test('S01E01 does not pick S02E01', () => {
   const zip = makeZip({ 'Show.S02E01.srt': 'wrong', 'Show.S01E01.srt': 'right' });
   assert.strictEqual(pickFromZip(zip, { season: 1, episode: 1 }).toString(), 'right');
 });
+
+test('matches 1x01 format', () => {
+  const zip = makeZip({ 'Show.2x01.srt': 'wrong', 'Show.1x01.srt': 'right' });
+  assert.strictEqual(pickFromZip(zip, { season: 1, episode: 1 }).toString(), 'right');
+});
+
+test('falls back to "Episode 1" when no SxxEyy file matches', () => {
+  const zip = makeZip({ 'Show Episode 2.srt': 'wrong', 'Show Episode 1.srt': 'right' });
+  assert.strictEqual(pickFromZip(zip, { season: 1, episode: 1 }).toString(), 'right');
+});
+
+test('loose pattern skips files tagged with another SxxEyy', () => {
+  const zip = makeZip({ 'Show.S02E01.srt': 'wrong', 'Show.S02E02.srt': 'wrong2' });
+  assert.strictEqual(pickFromZip(zip, { season: 1, episode: 1 }), null);
+});
+
+test('ignores episode number in folder name', () => {
+  const zip = makeZip({ 'Show.S01E01/Show.S01E02.srt': 'wrong', 'Show.S01E01/Show.S01E01.srt': 'right' });
+  assert.strictEqual(pickFromZip(zip, { season: 1, episode: 1 }).toString(), 'right');
+});
